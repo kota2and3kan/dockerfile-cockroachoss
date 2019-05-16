@@ -1,0 +1,19 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+stages:
+  - build
+
+build-cockroachoss:
+  stage: build
+  script:
+    - docker build -t "cockroachoss:build" ./cockroachoss
+    - docker run cockroachoss:build version
+    - VERSION=$(docker run cockroachoss:build version | head -n 1 | awk {'print $3'})
+    - docker tag cockroachoss:build "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
+    - docker push "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
