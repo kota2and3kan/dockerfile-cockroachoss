@@ -14,6 +14,10 @@ build-cockroachoss:
   script:
     - docker build -t "cockroachoss:build" ./cockroachoss
     - docker run cockroachoss:build version
-    - VERSION=$(docker run cockroachoss:build version | head -n 1 | awk {'print $3'})
+    - docker run cockroachoss:build version > tmp1
+    - head -n 1 tmp1 > tmp2
+    - awk {'print $3'} tmp2 > tmp3
+    - VERSION=$(cat tmp3)
     - docker tag cockroachoss:build "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
+    - docker image ls
     - docker push "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
