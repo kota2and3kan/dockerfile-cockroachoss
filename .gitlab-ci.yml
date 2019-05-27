@@ -21,3 +21,5 @@ build-cockroachoss:
     - docker tag cockroachoss:build "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
     - docker image ls
     - docker push "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
+  only:
+    - web
