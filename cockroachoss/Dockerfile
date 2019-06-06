@@ -11,5 +11,6 @@ COPY --from=builder-cockroachoss /cockroach-v19.1.1/src/github.com/cockroachdb/c
 RUN apt update > /dev/null \
  && apt install -y vim-tiny libncurses5 > /dev/null \
  && apt-get -y clean > /dev/null \
- && rm -rf /var/lib/apt/lists/* 
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /cockroach/cockroach-data
 ENTRYPOINT ["cockroachoss"]
