@@ -19,7 +19,18 @@ build-cockroachoss:
     - awk {'print $3'} tmp2 > tmp3
     - VERSION=$(cat tmp3)
     - docker tag cockroachoss:build "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
+    - docker tag cockroachoss:build "cockroachoss:$VERSION"
     - docker image ls
     - docker push "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:$VERSION"
+    - docker network create -d bridge roachnet
+    - docker run -d --name=roach1 --hostname=roach1 --net=roachnet -p 26257:26257 -p 8080:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" "cockroachoss:$VERSION" start --insecure
+    - sleep 1
+    - docker run -d --name=roach2 --hostname=roach2 --net=roachnet -v "${PWD}/cockroach-data/roach2:/cockroach/cockroach-data" "cockroachoss:$VERSION" start --insecure --join=roach1
+    - sleep 1
+    - docker run -d --name=roach3 --hostname=roach3 --net=roachnet -v "${PWD}/cockroach-data/roach3:/cockroach/cockroach-data" "cockroachoss:$VERSION" start --insecure --join=roach1
+    - sleep 3
+    - docker run --rm --net roachnet "cockroachoss:$VERSION" node status --url 'postgresql://root@roach1:26257?sslmode=disable'
+    - docker run --rm --net roachnet "cockroachoss:$VERSION" workload init intro 'postgresql://root@roach1:26257?sslmode=disable'
+    - docker run --rm --net roachnet "cockroachoss:$VERSION" sql --execute="SELECT * FROM intro.mytable WHERE (l % 2) = 0" --url 'postgresql://root@roach1:26257/intro?sslmode=disable'
   only:
     - web
