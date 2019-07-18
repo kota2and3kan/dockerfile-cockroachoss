@@ -43,7 +43,7 @@ $ sudo docker run -d \
 --net=roachnet \
 -p 26257:26257 -p 8080:8080 \
 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" \
-cockroachoss:v19.1.2 start --insecure
+cockroachoss:v19.1.3 start --insecure
 ```
 
 3. Add second node to the cluster.
@@ -53,7 +53,7 @@ $ sudo docker run -d \
 --hostname=roach2 \
 --net=roachnet \
 -v "${PWD}/cockroach-data/roach2:/cockroach/cockroach-data" \
-cockroachoss:v19.1.2 start --insecure --join=roach1
+cockroachoss:v19.1.3 start --insecure --join=roach1
 ```
 
 4. Add third node to the cluster.
@@ -63,13 +63,13 @@ $ sudo docker run -d \
 --hostname=roach3 \
 --net=roachnet \
 -v "${PWD}/cockroach-data/roach3:/cockroach/cockroach-data" \
-cockroachoss:v19.1.2 start --insecure --join=roach1
+cockroachoss:v19.1.3 start --insecure --join=roach1
 ```
 
 ### Connect to CockroachDB
 After start the CockroachDB, you can connect to the CockroachDB with using built-in SQL shell by the following command. 
 ```
-$ sudo docker run -it --rm --net roachnet cockroachoss:v19.1.2 sql --insecure --host roach1
+$ sudo docker run -it --rm --net roachnet cockroachoss:v19.1.3 sql --insecure --host roach1
 ```
 
 And, you can exit the SQL shell by the "\q" command.
