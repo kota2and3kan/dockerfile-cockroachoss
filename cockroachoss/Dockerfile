@@ -1,13 +1,13 @@
-FROM golang:1.12.7 AS builder-cockroachoss
+FROM golang:1.12.9 AS builder-cockroachoss
 RUN apt update > /dev/null \
  && apt install -y g++ libc6-dev libncurses5-dev git bash make cmake autoconf > /dev/null \
  && cd / \
- && wget -qO- https://binaries.cockroachdb.com/cockroach-v19.1.3.src.tgz | tar xz \
- && cd cockroach-v19.1.3 \
+ && wget -qO- https://binaries.cockroachdb.com/cockroach-v19.1.4.src.tgz | tar xz \
+ && cd cockroach-v19.1.4 \
  && make buildoss > /dev/null
 
 FROM ubuntu:19.04
-COPY --from=builder-cockroachoss /cockroach-v19.1.3/src/github.com/cockroachdb/cockroach/cockroachoss /usr/local/bin/cockroachoss 
+COPY --from=builder-cockroachoss /cockroach-v19.1.4/src/github.com/cockroachdb/cockroach/cockroachoss /usr/local/bin/cockroachoss 
 RUN apt update > /dev/null \
  && apt install -y vim-tiny libncurses5 > /dev/null \
  && apt-get -y clean > /dev/null \
