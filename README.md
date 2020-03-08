@@ -4,7 +4,7 @@ This Dcokerfile builds a core features (Business Source License) of CockroachDB 
 
 
 ## Note
-For test local or development envronment.  
+For test local or development environment.  
 Not for production.
 
 
