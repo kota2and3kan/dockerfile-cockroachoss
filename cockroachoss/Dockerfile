@@ -6,7 +6,7 @@ RUN apt update > /dev/null \
  && cd cockroach-v19.2.6 \
  && make buildoss > /dev/null
 
-FROM ubuntu:19.04
+FROM ubuntu:20.04
 COPY --from=builder-cockroachoss /cockroach-v19.2.6/src/github.com/cockroachdb/cockroach/cockroachoss /usr/local/bin/cockroachoss 
 RUN apt update > /dev/null \
  && apt install -y vim-tiny libncurses5 > /dev/null \
