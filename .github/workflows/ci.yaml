@@ -48,7 +48,7 @@ jobs:
           --insecure \
           --join=cockroach-1,cockroach-2,cockroach-3
         sleep 1
-        docker exec cockroach-1 ./cockroachoss init --host=cockroach-1 --insecure
+        docker exec cockroach-1 cockroachoss init --host=cockroach-1 --insecure
     - name: Access CockroachDB Local Cluster
       run: |
         docker run --rm \
