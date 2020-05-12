@@ -1,0 +1,66 @@
+name: Build CockroachDB core features (BSL).
+on:
+  push:
+    branches:
+    - master
+jobs:
+  build-and-test-cockroachoss:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: master
+    - name: Build
+      run: |
+        docker build -t "cockroachoss:latest" ./cockroachoss
+        docker image ls
+        docker run cockroachoss:latest version
+    - name: Start CockroachDB Local Cluster
+      run: |
+        docker network create cockroach-net
+        docker run -d \
+          --name=cockroach-1 \
+          --hostname=cockroach-1 \
+          --net=cockroach-net \
+          -p 26257:26257 -p 8081:8080 \
+          -v "${PWD}/cockroach-cluster/cockroach-data/cockroach-1:/cockroach/cockroach-data" \
+          cockroachoss:latest start \
+          --insecure \
+          --join=cockroach-1,cockroach-2,cockroach-3
+        sleep 1
+        docker run -d \
+          --name=cockroach-2 \
+          --hostname=cockroach-2 \
+          --net=cockroach-net \
+          -p 8082:8080 \
+          -v "${PWD}/cockroach-cluster/cockroach-data/cockroach-2:/cockroach/cockroach-data" \
+          cockroachoss:latest start \
+          --insecure \
+          --join=cockroach-1,cockroach-2,cockroach-3
+        sleep 1
+        docker run -d \
+          --name=cockroach-3 \
+          --hostname=cockroach-3 \
+          --net=cockroach-net \
+          -p 8083:8080 \
+          -v "${PWD}/cockroach-cluster/cockroach-data/cockroach-3:/cockroach/cockroach-data" \
+          cockroachoss:latest start \
+          --insecure \
+          --join=cockroach-1,cockroach-2,cockroach-3
+        sleep 1
+        docker exec -it cockroach-1 ./cockroach init --host=cockroach-1 --insecure
+    - name: Access CockroachDB Local Cluster
+      run: |
+        docker run --rm \
+          --net cockroach-net \
+          cockroachoss:latest node status \
+          --url 'postgresql://root@cockroach-1:26257?sslmode=disable'
+        docker run --rm \
+          --net cockroach-net \
+          cockroachoss:latest workload \
+          init intro 'postgresql://root@cockroach-1:26257?sslmode=disable'
+        docker run --rm \
+          --net cockroach-net \
+          cockroachoss:latest sql \
+          --execute="SELECT * FROM intro.mytable WHERE (l % 2) = 0" \
+          --url 'postgresql://root@cockroach-1:26257/intro?sslmode=disable'
