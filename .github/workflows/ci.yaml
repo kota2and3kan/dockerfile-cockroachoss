@@ -1,4 +1,4 @@
-name: Build CockroachDB core features (BSL).
+name: Build CockroachDB core features (BSL)
 on:
   push:
     branches:
