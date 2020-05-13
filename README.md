@@ -1,4 +1,5 @@
 # dockerfile-cockroachoss
+![Build CockroachDB core features (BSL)](https://github.com/kota2and3kan/dockerfile-cockroachoss/workflows/Build%20CockroachDB%20core%20features%20(BSL)/badge.svg)  
 Dockerfile for local test of CockroachDB core features (Business Source License).  
 This Dcokerfile builds a core features (Business Source License) of CockroachDB (Excluding enterprise functionality).
 
