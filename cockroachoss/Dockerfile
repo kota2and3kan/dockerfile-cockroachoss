@@ -9,8 +9,8 @@ RUN apt update > /dev/null \
 FROM ubuntu:20.04
 COPY --from=builder-cockroachoss /cockroach-v20.1.0/src/github.com/cockroachdb/cockroach/cockroachoss /usr/local/bin/cockroachoss 
 RUN apt update > /dev/null \
- && apt install -y vim-tiny libncurses5 > /dev/null \
+ && DEBIAN_FRONTEND=noninteractive apt install -y vim-tiny libncurses5 tzdata > /dev/null \
  && apt-get -y clean > /dev/null \
- && rm -rf /var/lib/apt/lists/* 
+ && rm -rf /var/lib/apt/lists/*
 WORKDIR /cockroach
 ENTRYPOINT ["cockroachoss"]
