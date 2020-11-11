@@ -34,11 +34,13 @@ test-cockroachoss:
     - docker image ls
     - docker run --rm "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" version
     - docker network create -d bridge roachnet
-    - docker run -d --name=roach1 --hostname=roach1 --net=roachnet -p 26257:26257 -p 8080:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure
+    - docker run -d --name=roach1 --hostname=roach1 --net=roachnet -p 26257:26257 -p 8080:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure --join=roach1,roach2,roach3
     - sleep 3 
-    - docker run -d --name=roach2 --hostname=roach2 --net=roachnet -v "${PWD}/cockroach-data/roach2:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure --join=roach1
+    - docker run -d --name=roach2 --hostname=roach2 --net=roachnet -v "${PWD}/cockroach-data/roach2:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure --join=roach1,roach2,roach3
     - sleep 3 
-    - docker run -d --name=roach3 --hostname=roach3 --net=roachnet -v "${PWD}/cockroach-data/roach3:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure --join=roach1
+    - docker run -d --name=roach3 --hostname=roach3 --net=roachnet -v "${PWD}/cockroach-data/roach3:/cockroach/cockroach-data" "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" start --insecure --join=roach1,roach2,roach3
+    - sleep 3
+    - docker exec roach1 cockroachoss init --host=roach1 --insecure
     - sleep 3
     - docker run --rm --net roachnet "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" node status --url 'postgresql://root@roach1:26257?sslmode=disable'
     - docker run --rm --net roachnet "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/cockroachoss:latest" workload init intro 'postgresql://root@roach1:26257?sslmode=disable'
