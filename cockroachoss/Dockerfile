@@ -1,4 +1,4 @@
-FROM golang:1.15.11 AS builder-cockroachoss
+FROM golang:1.16.6 AS builder-cockroachoss
 RUN apt update > /dev/null \
  && apt install -y g++ libc6-dev libncurses5-dev git bash make cmake autoconf > /dev/null \
  && cd / \
